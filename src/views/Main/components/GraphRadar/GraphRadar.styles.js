@@ -15,5 +15,10 @@ export const FormWrapper = styled.div`
 `;
 
 export const ChartWrapper = styled.div`
-  height: 40rem;
+  width: 100%;
+  max-width: 44rem;
+`;
+
+export const Title = styled.h1`
+  margin: 2.4rem;
 `;

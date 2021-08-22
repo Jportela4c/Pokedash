@@ -1,80 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
-import { isString } from 'lodash';
 
-import Select from '../../../../components/Select';
+import { Wrapper, ChartWrapper, Title } from './GraphBar.styles';
 
-import { Wrapper, FormWrapper, ChartWrapper } from './GraphBar.styles';
-
-const OPTIONS = [
-  { value: 'attack', label: 'Ataque' },
-  { value: 'defense', label: 'Defesa' },
-  { value: 'sp_attack', label: 'Ataque Sp.' },
-  { value: 'sp_defense', label: 'Defesa Sp.' },
-  { value: 'speed', label: 'Velocidade' },
-  { value: 'hp', label: 'HP' },
-];
-
-const GraphBar = ({ defaultData, typeColors, allowedType }) => {
+const GraphBar = ({ strongest, getColor }) => {
   const [data, setData] = useState([]);
-  const [option, setOption] = useState(OPTIONS[0]);
+  const { labelX, labelY } = strongest;
 
   useEffect(() => {
-    onApplyOptions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allowedType]);
+    const { pokemons } = strongest ?? {};
 
-  const getStrongestPokemon = value => {
-    let sortedPokemon = defaultData.sort((a, b) => b[value] - a[value]);
-
-    if (allowedType && isString(allowedType)) {
-      sortedPokemon = [
-        ...sortedPokemon.filter(item => item.type1 === allowedType),
-      ];
+    if (!pokemons?.length) {
+      return;
     }
 
-    return sortedPokemon.slice(0, 7);
-  };
-
-  const onApplyOptions = () => {
-    const strongestData = getStrongestPokemon(option?.value);
-
-    let newData = strongestData.map((pokemon, index) => ({
-      x: pokemon[option?.value],
+    let newData = pokemons?.map((pokemon, index) => ({
+      ...pokemon,
+      valueX: pokemon.x,
+      valueY: pokemon.y,
+      x: pokemon.averageValue,
       y: index,
-      name: pokemon.name,
-      type: pokemon.type1,
     }));
 
     setData([...newData]);
-  };
 
-  const onChangeOption = option => {
-    setOption(option);
-
-    const strongestData = getStrongestPokemon(option?.value);
-
-    let newData = strongestData.map((pokemon, index) => ({
-      x: pokemon[option?.value],
-      y: index,
-      name: pokemon.name,
-      type: pokemon.type1,
-      index,
-    }));
-
-    setData([...newData]);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [strongest]);
 
   const renderBar = () => {
-    const { label } = option;
-
-    const getColor = type => typeColors.find(item => item.type === type)?.color;
-
     const chartData = {
       labels: data.map(item => item.name),
       datasets: [
         {
-          label,
+          label: `Pokémons mais fortes - Média ${labelX} / ${labelY}`,
           data,
           backgroundColor: context => {
             const pokemon = context?.raw;
@@ -87,12 +45,22 @@ const GraphBar = ({ defaultData, typeColors, allowedType }) => {
     const options = {
       indexAxis: 'y',
       plugins: {
+        legend: {
+          display: false,
+        },
         tooltip: {
           callbacks: {
             label: context => {
               const pokemon = context?.raw;
-              const label = `${pokemon?.x}`;
-              return label;
+              return `Tipo: ${pokemon.type}`;
+            },
+            afterLabel: context => {
+              const pokemon = context?.raw;
+              return [
+                `${labelX}: ${pokemon.valueX}`,
+                `${labelY}: ${pokemon.valueY}`,
+                `Média: ${pokemon.x}`,
+              ];
             },
           },
         },
@@ -104,13 +72,7 @@ const GraphBar = ({ defaultData, typeColors, allowedType }) => {
 
   return (
     <Wrapper>
-      <FormWrapper>
-        <Select
-          label="Atributo:"
-          options={OPTIONS}
-          onChange={e => onChangeOption(e)}
-        />
-      </FormWrapper>
+      <Title>Top 7 dos Pokémon com a maior média de poder:</Title>
       <ChartWrapper>{renderBar()}</ChartWrapper>
     </Wrapper>
   );

@@ -4,9 +4,9 @@ import { isString } from 'lodash';
 
 import Select from '../../../../components/Select';
 
-import { Wrapper, FormWrapper, ChartWrapper } from './GraphRadar.styles';
+import { Wrapper, FormWrapper, ChartWrapper, Title } from './GraphRadar.styles';
 
-const GraphRadar = ({ defaultData, typeColors, allowedType }) => {
+const GraphRadar = ({ defaultData, getColor, strongest, allowedType }) => {
   const [options, setOptions] = useState([]);
   const [pokemon1, setPokemon1] = useState(options?.[0]);
   const [pokemon2, setPokemon2] = useState(options?.[0]);
@@ -23,6 +23,18 @@ const GraphRadar = ({ defaultData, typeColors, allowedType }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultData]);
 
+  useEffect(() => {
+    if (!strongest) {
+      return;
+    }
+
+    const { pokemons } = strongest ?? {};
+
+    setPokemon1(options.find(item => item?.value?.name === pokemons[0].name));
+    setPokemon2(options.find(item => item?.value?.name === pokemons[1].name));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [strongest]);
+
   const manageOptionsList = () => {
     let newOptions = [];
 
@@ -30,34 +42,46 @@ const GraphRadar = ({ defaultData, typeColors, allowedType }) => {
       (a, b) => a.pokedex_number - b.pokedex_number
     );
 
-    const getFormattedPokemon = item => ({
-      value: {
-        name: item.name,
-        data: [
-          item.attack,
-          item.defense,
-          item.sp_attack,
-          item.sp_defense,
-          item.speed,
-          item.hp,
-        ],
-        type: item.type1,
-      },
-      label: `#${item.pokedex_number} ${item.name}`,
-    });
+    const getFormattedPokemon = item => {
+      let getCapitalizedType = string => {
+        const firstLetter = string.split('')[0].toUpperCase();
+        const capitalizedString = `${firstLetter}${string
+          .toLowerCase()
+          .split('')
+          .splice(1, string.length)
+          .join('')}`;
+
+        return capitalizedString;
+      };
+
+      return {
+        value: {
+          name: item.name,
+          data: [
+            item.attack,
+            item.defense,
+            item.sp_attack,
+            item.sp_defense,
+            item.speed,
+            item.hp,
+          ],
+          type: getCapitalizedType(item.type1),
+        },
+        label: `#${item.pokedex_number} ${item.name}`,
+      };
+    };
 
     if (allowedType && isString(allowedType)) {
       newOptions = [
         ...sortedPokemon
-          .filter(item => item.type1 === allowedType)
+          .filter(
+            item => item.type1.toLowerCase() === allowedType.toLocaleLowerCase()
+          )
           .map(getFormattedPokemon),
       ];
     } else {
       newOptions = [...sortedPokemon.map(getFormattedPokemon)];
     }
-
-    console.log(allowedType);
-    console.log(newOptions);
 
     setPokemon1(newOptions[0]);
     setPokemon2(newOptions[1]);
@@ -66,8 +90,6 @@ const GraphRadar = ({ defaultData, typeColors, allowedType }) => {
   };
 
   const renderRadar = () => {
-    const getColor = type => typeColors.find(item => item.type === type)?.color;
-
     let datasets = [];
 
     if (pokemon1 && pokemon2) {
@@ -106,15 +128,18 @@ const GraphRadar = ({ defaultData, typeColors, allowedType }) => {
 
   return (
     <Wrapper>
+      <Title>Comparação de atributos entre dois Pokémon:</Title>
       <FormWrapper>
         <Select
           label="Pokémon 1:"
           options={options}
+          value={pokemon1}
           onChange={e => setPokemon1(e)}
         />
         <Select
           label="Pokémon 2:"
           options={options}
+          value={pokemon2}
           onChange={e => setPokemon2(e)}
         />
       </FormWrapper>

@@ -30,4 +30,5 @@ export const Circle = styled.div`
 export const Text = styled.span`
   color: white;
   font-size: 0.8rem;
+  font-weight: ${({ isSelected }) => (isSelected ? 'bold' : 'regular')};
 `;

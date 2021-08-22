@@ -7,6 +7,12 @@ export const Wrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  background: ${colors.grey};
+  /* background: ${colors.grey}; */
+  background: #ffffe6;
   position: relative;
+
+  h1,
+  label {
+    color: ${colors.grey};
+  }
 `;

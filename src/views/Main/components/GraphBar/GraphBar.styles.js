@@ -8,12 +8,11 @@ export const Wrapper = styled.div`
   padding: 3.2rem 0;
 `;
 
-export const FormWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 2.4rem;
+export const ChartWrapper = styled.div`
+  width: 100%;
+  max-width: 64rem;
 `;
 
-export const ChartWrapper = styled.div`
-  width: 40rem;
+export const Title = styled.h1`
+  margin: 2.4rem;
 `;
