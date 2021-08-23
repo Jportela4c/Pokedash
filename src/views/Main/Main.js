@@ -11,7 +11,7 @@ import Legend from './components/Legend';
 
 import { Wrapper } from './Main.styles';
 
-const TYPE_COLORS = [
+/*const TYPE_COLORS = [
   { type: 'Bug', color: '#6b8e23' },
   { type: 'Dark', color: '#705848' },
   { type: 'Dragon', color: '#7038F8' },
@@ -30,7 +30,24 @@ const TYPE_COLORS = [
   { type: 'Rock', color: '#B8A038' },
   { type: 'Steel', color: '#B8B8D0' },
   { type: 'Water', color: '#6890F0' },
+]; */
+
+const TYPE_COLORS = [
+  { type: 'Bug', color: '#6b8e23' },
+  { type: 'Rock', color: '#705848' },
+  { type: 'Dragon', color: '#7038F8' },
+  { type: 'Electric', color: '#F8D030' },
+  { type: 'Fighting', color: '#C03028' },
+  { type: 'Fire', color: '#F08030' },
+  { type: 'Ghost', color: '#705898' },
+  { type: 'Grass', color: '#78C850' },
+  { type: 'Normal', color: '#A8A878' },
+  { type: 'Poison', color: '#A040A0' },
+  { type: 'Psychic', color: '#F85888' },
+  { type: 'Water', color: '#6890F0' },
 ];
+
+
 
 const Main = () => {
   const [defaultData, setDefaultData] = useState([]);
